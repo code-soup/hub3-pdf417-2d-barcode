@@ -1,18 +1,24 @@
-PDF 417 Barcode Generator
-=========================
+HUB3 PDF417 2D Barcode PHP
+==========================
 
-[![License](https://img.shields.io/packagist/l/codesoup/pdf417.svg?style=flat-square)](https://packagist.org/packages/codesoup/pdf417)
+[![License](https://img.shields.io/packagist/l/codesoup/hub3-pdf417-2d-barcode.svg?style=flat-square)](https://packagist.org/packages/codesoup/hub3-pdf417-2d-barcode)
 
-Modern PHP 8.2+ fork of the archived [bigfish/pdf417](https://github.com/ihabunek/pdf417-php) library.
+Modern PHP 8.2+ library for generating **PDF417 2D barcodes**, specifically optimized for Croatian **HUB-3 banking payment slips**.
 
-## About This Fork
+## About HUB-3
 
-This is a modernized and actively maintained fork of Ivan Habunek's excellent PDF417 barcode library. The original project was archived in 2017. This fork brings the library up to modern PHP standards with:
+**HUB-3** is a payment slip format used by Croatian banks and published by the Croatian Banking Association. It defines a standard way to encode payment data as a 2D barcode in PDF417 format. This barcode is printed on HUB-3 payment slips and can be scanned by banking applications for quick payment processing.
 
-- **PHP 8.2+** compatibility
+Learn more about the HUB-3 standard at [hub3.bigfish.software](https://hub3.bigfish.software/).
+
+## About This Library
+
+This is a modernized and actively maintained fork of Ivan Habunek's excellent PDF417 barcode library. The original project ([bigfish/pdf417](https://github.com/ihabunek/pdf417-php)) was archived in 2017. This fork brings the library up to modern PHP standards with:
+
+- **PHP 8.2+** compatibility with strict type safety
 - **Modern dependencies** (intervention/image 3.x, PHPUnit 11)
-- **Type safety** (strict types, type hints, return types)
-- **Modern PHP features** (enums, match expressions, property promotion)
+- **Type safety** (declare strict types, type hints, return types, typed properties)
+- **Comprehensive testing** (49 tests, 3119 assertions)
 - **Continuous maintenance** and bug fixes
 
 **Original Author:** [Ivan Habunek](https://github.com/ihabunek) (@ihabunek)
@@ -32,7 +38,7 @@ Installation
 Install via Composer:
 
 ```bash
-composer require codesoup/pdf417
+composer require codesoup/hub3-pdf417-2d-barcode
 ```
 
 Usage overview
@@ -139,6 +145,15 @@ This will be rendered as:
 <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA.... " />
 ```
 
+## Use Cases
+
+This library is perfect for:
+
+- **Croatian banking applications** - Generate HUB-3 payment slip barcodes
+- **Payment processing systems** - Encode payment data for bank processing
+- **Invoice generation** - Add 2D barcodes to invoices for Croatian market
+- **General PDF417 needs** - Any application requiring PDF417 2D barcodes
+
 ## Migration from bigfish/pdf417
 
 If you're migrating from the original library, see [UPGRADE.md](UPGRADE.md) for details.
@@ -151,10 +166,14 @@ Main changes:
 ## Credits
 
 **Original Implementation:** [Ivan Habunek](https://github.com/ihabunek) (bigfish/pdf417)
+**PHP 8.2+ Modernization & HUB-3 Optimization:** CodeSoup
 
-Without these resources, the original implementation would have been much harder:
+Resources that helped the original implementation:
 * http://grandzebu.net/informatique/codbar-en/pdf417.htm
 * http://www.idautomation.com/barcode-faq/2d/pdf417/
+* HUB-3 standard by Croatian Banking Association
+
+Uses [Intervention Image](https://image.intervention.io/) for image rendering.
 
 ## License
 

@@ -1,8 +1,8 @@
 {
-    "name": "codesoup/pdf417",
-    "description": "A library for generating PDF417 barcodes in PHP 8.2+ (Modernized fork of bigfish/pdf417)",
+    "name": "codesoup/hub3-pdf417-2d-barcode",
+    "description": "Modern PHP 8.2+ library for generating PDF417 2D barcodes, optimized for Croatian HUB-3 banking payment slips",
     "license": "MIT",
-    "keywords": ["barcode", "pdf417", "2d-barcode", "generator"],
+    "keywords": ["barcode", "pdf417", "2d-barcode", "hub3", "hub-3", "croatian-banking", "payment-slip", "generator"],
     "authors": [
         {
             "name": "Ivan Habunek",
