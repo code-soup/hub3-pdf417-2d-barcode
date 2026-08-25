@@ -165,8 +165,14 @@ Main changes:
 
 ## Credits
 
-**Original Implementation:** [Ivan Habunek](https://github.com/ihabunek) (bigfish/pdf417)
+**Original Implementation:** [Ivan Habunek](https://github.com/ihabunek) ([@ihabunek](https://github.com/ihabunek))
 **PHP 8.2+ Modernization & HUB-3 Optimization:** CodeSoup
+
+**Original Library:**
+- Repository: https://github.com/ihabunek/pdf417-php
+- Website: https://hub3.bigfish.software/
+- Author's Website: https://bigfish.software/
+- Author's GitHub: https://github.com/ihabunek
 
 Resources that helped the original implementation:
 * http://grandzebu.net/informatique/codbar-en/pdf417.htm
