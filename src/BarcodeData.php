@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BigFish\PDF417;
 
 /**
@@ -7,13 +9,22 @@ namespace BigFish\PDF417;
  */
 class BarcodeData
 {
-    public $codeWords;
-    public $columns;
-    public $rows;
-    public $codes;
-    public $securityLevel;
+    /** @var array<int> */
+    public array $codeWords = [];
 
-    public function getPixelGrid()
+    public int $columns = 0;
+
+    public int $rows = 0;
+
+    /** @var array<int, array<int, int>> */
+    public array $codes = [];
+
+    public int $securityLevel = 0;
+
+    /**
+     * @return array<int, array<int, bool>>
+     */
+    public function getPixelGrid(): array
     {
         $pixelGrid = [];
         foreach ($this->codes as $row) {
@@ -22,7 +33,7 @@ class BarcodeData
                 $bin = decbin($value);
                 $len = strlen($bin);
                 for ($i = 0; $i < $len; $i++) {
-                    $pixelRow[] = (boolean) $bin[$i];
+                    $pixelRow[] = $bin[$i] === '1';
                 }
             }
             $pixelGrid[] = $pixelRow;

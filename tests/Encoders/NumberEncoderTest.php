@@ -31,12 +31,6 @@ class NumberEncoderTest extends TestCase
         $this->assertFalse($ne->canEncode("123"));
     }
 
-    public function testCanEncodeException()
-    {
-        $ne = new NumberEncoder();
-        $this->assertFalse($ne->canEncode([]));
-    }
-
     public function testGetSwitchCode()
     {
         $ne = new NumberEncoder();
@@ -44,7 +38,7 @@ class NumberEncoderTest extends TestCase
 
         $this->assertSame($sw, $ne->getSwitchCode("123"));
         $this->assertSame($sw, $ne->getSwitchCode("foo"));
-        $this->assertSame($sw, $ne->getSwitchCode([]));
+        $this->assertSame($sw, $ne->getSwitchCode("bar"));
     }
 
     public function testEncode()
@@ -60,22 +54,17 @@ class NumberEncoderTest extends TestCase
         $this->assertSame($expected, $actual);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Expected first parameter to be a string, array given.
-     */
     public function testInvalidInput1()
     {
+        $this->expectException(\TypeError::class);
         $ne = new NumberEncoder();
         $ne->encode([], true);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage First parameter contains non-numeric characters.
-     */
     public function testInvalidInput2()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('First parameter contains non-numeric characters.');
         $ne = new NumberEncoder();
         $ne->encode("foo", true);
     }

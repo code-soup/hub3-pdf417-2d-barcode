@@ -19,7 +19,7 @@ class SvgRendererTest extends TestCase
     public function testRender()
     {
         $data = new BarcodeData();
-        $data->codes = [[true, false],[false, true]];
+        $data->codes = [[1, 0],[0, 1]];
 
         $scale = 3;
         $ratio = 5;
@@ -33,19 +33,19 @@ class SvgRendererTest extends TestCase
 
         // Check it contains the correct doctype
         $doctype = '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
-        $this->assertContains($doctype, $string);
+        $this->assertStringContainsString($doctype, $string);
 
         // Check document structure
         $xml = simplexml_load_string($string);
         $this->assertFalse(isset($xml->description));
         $this->assertTrue(isset($xml->g));
 
-        foreach($xml->g as $group) {
-            foreach($group->rect as $rect) {
-                $this->assertSame($scale * $ratio, (integer) $rect['height']);
-                $this->assertSame($scale, (integer) $rect['width']);
-                $this->assertGreaterThanOrEqual(0, (integer) $rect['x']);
-                $this->assertGreaterThanOrEqual(0, (integer) $rect['y']);
+        foreach ($xml->g as $group) {
+            foreach ($group->rect as $rect) {
+                $this->assertSame($scale * $ratio, (int) $rect['height']);
+                $this->assertSame($scale, (int) $rect['width']);
+                $this->assertGreaterThanOrEqual(0, (int) $rect['x']);
+                $this->assertGreaterThanOrEqual(0, (int) $rect['y']);
             }
         }
     }
@@ -53,7 +53,7 @@ class SvgRendererTest extends TestCase
     public function testRenderWithDescription()
     {
         $data = new BarcodeData();
-        $data->codes = [[true, false],[false, true]];
+        $data->codes = [[1, 0],[0, 1]];
 
         $desc = "today is a good day to generate barcodes";
 

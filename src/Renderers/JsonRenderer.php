@@ -1,17 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BigFish\PDF417\Renderers;
 
 use BigFish\PDF417\BarcodeData;
 
 class JsonRenderer extends AbstractRenderer
 {
-    public function getContentType()
+    public function getContentType(): ?string
     {
         return "application/json";
     }
 
-    public function render(BarcodeData $data)
+    public function render(BarcodeData $data): string
     {
         // Function which translates true/false to 1/0
         $fmap = function ($element) {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BigFish\PDF417\Encoders;
 
 use BigFish\PDF417\EncoderInterface;
@@ -14,43 +16,25 @@ use BigFish\PDF417\EncoderInterface;
  */
 class ByteEncoder implements EncoderInterface
 {
-    /**
-     * Code word used to switch to Byte mode.
-     */
-    const SWITCH_CODE_WORD = 901;
+    public const SWITCH_CODE_WORD = 901;
+    public const SWITCH_CODE_WORD_ALT = 924;
 
-    /**
-     * Alternate code word used to switch to Byte mode; used when number of
-     * bytes to encode is divisible by 6.
-     */
-    const SWITCH_CODE_WORD_ALT = 924;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function canEncode($char)
+    public function canEncode(string $char): bool
     {
         // Can encode any character
-        return is_string($char) && strlen($char) === 1;
+        return strlen($char) === 1;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getSwitchCode($data)
+    public function getSwitchCode(string $data): int
     {
         return (strlen($data) % 6 === 0) ? self::SWITCH_CODE_WORD_ALT : self::SWITCH_CODE_WORD;
     }
 
     /**
-     * {@inheritdoc}
+     * @return array<int>
      */
-    public function encode($bytes, $addSwitchCode)
+    public function encode(string $bytes, bool $addSwitchCode): array
     {
-        if (!is_string($bytes)) {
-            $type = gettype($bytes);
-            throw new \InvalidArgumentException("Expected first parameter to be a string, $type given.");
-        }
 
         // Count the number of 6 character chunks
         $byteCount = strlen($bytes);
@@ -84,37 +68,34 @@ class ByteEncoder implements EncoderInterface
     /**
      * Takes a chunk of 6 bytes and encodes it to 5 code words.
      *
-     * The calculation consists of switching from base 256 to base 900.
-     *
-     * BC math is used to perform large number arithmetic.
+     * @return array<int>
      */
-    private function encodeChunk($chunk)
+    private function encodeChunk(string $chunk): array
     {
         $sum = "0";
         for ($i = 0; $i < 6; $i++) {
             $char = substr($chunk, 5 - $i, 1);
-            $val = bcmul(bcpow(256, $i), ord($char));
+            $val = bcmul(bcpow('256', (string) $i), (string) ord($char));
             $sum = bcadd($sum, $val);
         }
 
         $cws = [];
-        while(bccomp($sum, 0) > 0) {
-            $cw = bcmod($sum, 900);
-            $sum = bcdiv($sum, 900, 0); // Integer division
+        while(bccomp($sum, '0') > 0) {
+            $cw = bcmod($sum, '900');
+            $sum = bcdiv($sum, '900', 0); // Integer division
 
-            array_unshift($cws, (integer) $cw);
+            array_unshift($cws, (int) $cw);
         }
 
         return $cws;
     }
 
     /**
-     * Takes a chunk of less than 6 bytes and encodes it the same number of code
-     * words as the length of the chunk.
+     * Takes a chunk of less than 6 bytes and encodes it.
      *
-     * Base remains unchanged.
+     * @return array<int>
      */
-    private function encodeIncompleteChunk($chunk)
+    private function encodeIncompleteChunk(string $chunk): array
     {
         $cws = [];
 

@@ -161,7 +161,7 @@ class ReedSolomon
             }
         }
 
-        foreach($ecWords as &$word) {
+        foreach ($ecWords as &$word) {
             if ($word > 0) {
                 $word = 929 - $word;
             }

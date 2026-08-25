@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BigFish\PDF417\Encoders;
 
 use BigFish\PDF417\EncoderInterface;
@@ -19,14 +21,14 @@ class TextEncoder implements EncoderInterface
     /**
      * Code word used to switch to Text mode.
      */
-    const SWITCH_CODE_WORD = 900;
+    public const SWITCH_CODE_WORD = 900;
 
     /**
      * Since each code word consists of 2 characters, a padding value is
      * needed when encoding a single character. 29 is used as padding because
      * it's a switch in all 4 submodes, and doesn't add any data.
      */
-    const PADDING_VALUE = 29;
+    public const PADDING_VALUE = 29;
 
     // -- Submodes ------------------------------------------------------
 
@@ -145,32 +147,21 @@ class TextEncoder implements EncoderInterface
         $this->populateReverseLookup();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function canEncode($char)
+    public function canEncode(string $char): bool
     {
         return isset($this->reverseLookup[$char]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getSwitchCode($data)
+    public function getSwitchCode(string $data): int
     {
         return self::SWITCH_CODE_WORD;
     }
 
     /**
-     * {@inheritdoc}
+     * @return array<int>
      */
-    public function encode($text, $addSwitchCode)
+    public function encode(string $text, bool $addSwitchCode): array
     {
-        if (!is_string($text)) {
-            $type = gettype($text);
-            throw new \InvalidArgumentException("Expected first parameter to be a string, $type given.");
-        }
-
         $interim = $this->encodeInterim($text);
         return $this->encodeFinal($interim, $addSwitchCode);
     }

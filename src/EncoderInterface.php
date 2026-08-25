@@ -1,34 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BigFish\PDF417;
 
 interface EncoderInterface
 {
     /**
      * Checks whether the given character can be encoded using this encoder.
-     *
-     * @param  string $char The character.
-     * @return boolean
      */
-    public function canEncode($char);
+    public function canEncode(string $char): bool;
 
     /**
      * Encodes a string into codewords.
      *
-     * @param  string  $string        String to encode.
-     * @param  boolean $addSwitchCode Whether to add the mode switch code at the
-     *                                beginning.
-     * @return array                  An array of code words.
-     * @throws Exception              If any of the characters cannot be encoded
+     * @param bool $addSwitchCode Whether to add the mode switch code at the beginning.
+     * @return array<int> An array of code words.
+     * @throws \InvalidArgumentException If any of the characters cannot be encoded
      */
-    public function encode($string, $addSwitchCode);
+    public function encode(string $string, bool $addSwitchCode): array;
 
     /**
-     * Returns the switch code word for the encoding mode implemented by the
-     * encoder.
-     *
-     * @param  string $data Data being encoded (can make a difference).
-     * @return integer      The switch code word.
+     * Returns the switch code word for the encoding mode implemented by the encoder.
      */
-    public function getSwitchCode($data);
+    public function getSwitchCode(string $data): int;
 }

@@ -35,7 +35,7 @@ class TextEncoderTest extends TestCase
 
         $this->assertSame($sw, $te->getSwitchCode("123"));
         $this->assertSame($sw, $te->getSwitchCode("foo"));
-        $this->assertSame($sw, $te->getSwitchCode([]));
+        $this->assertSame($sw, $te->getSwitchCode("bar"));
     }
 
     public function testEncode1()
@@ -64,12 +64,9 @@ class TextEncoderTest extends TestCase
         $this->assertSame($expected, $actual);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Expected first parameter to be a string, array given.
-     */
     public function testInvalidInput()
     {
+        $this->expectException(\TypeError::class);
         $te = new TextEncoder();
         $te->encode([], true);
     }

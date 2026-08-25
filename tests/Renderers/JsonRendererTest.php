@@ -20,8 +20,8 @@ class JsonRendererTest extends TestCase
     {
         $data = new BarcodeData();
         $data->codes = [
-            [true, false],
-            [false, true],
+            [1, 0],
+            [0, 1],
         ];
 
         $renderer = new JsonRenderer();

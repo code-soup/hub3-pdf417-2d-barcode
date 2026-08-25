@@ -5,6 +5,7 @@ namespace BigFish\PDF417\Tests\Renderers;
 use BigFish\PDF417\BarcodeData;
 use BigFish\PDF417\Renderers\ImageRenderer;
 use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 use PHPUnit\Framework\TestCase;
 
 class ImageRendererTest extends TestCase
@@ -47,72 +48,59 @@ class ImageRendererTest extends TestCase
         $this->assertNull($actual);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Invalid option "format": "foo".
-     */
     public function testInvalidFormat()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid option "format": "foo".');
         new ImageRenderer(["format" => "foo"]);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Invalid option "scale": "0".
-     */
     public function testInvalidScale()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid option "scale": "0".');
         new ImageRenderer(["scale" => 0]);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Invalid option "ratio": "0".
-     */
     public function testInvalidRatio()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid option "ratio": "0".');
         new ImageRenderer(["ratio" => 0]);
     }
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Invalid option "padding": "-1".
-     */
+
     public function testInvalidPadding()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid option "padding": "-1".');
         new ImageRenderer(["padding" => -1]);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Invalid option "color": "red".
-     */
     public function testInvalidColor()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid option "color": "red".');
         new ImageRenderer(["color" => "red"]);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Invalid option "bgColor": "red".
-     */
     public function testInvalidBgColor()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid option "bgColor": "red".');
         new ImageRenderer(["bgColor" => "red"]);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Invalid option "quality": "101".
-     */
     public function testInvalidQuality()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid option "quality": "101".');
         new ImageRenderer(["quality" => 101]);
     }
 
     public function testRenderPNG()
     {
         $data = new BarcodeData();
-        $data->codes = [[true, false],[false, true]];
+        $data->codes = [[1, 0],[0, 1]];
 
         $scale = 4;
         $ratio = 5;
@@ -128,17 +116,15 @@ class ImageRendererTest extends TestCase
 
         $png = $renderer->render($data);
 
-        $manager = new ImageManager();
-        $image = $manager->make($png);
+        $manager = new ImageManager(new Driver());
+        $image = $manager->read($png);
 
         // Expected dimensions
         $width = 2 * $padding + 2 * $scale;
         $height = 2 * $padding + 2 * $scale * $ratio;
-        $mime = "image/png";
 
         $this->assertSame($width, $image->width());
         $this->assertSame($height, $image->height());
-        $this->assertSame($mime, $image->mime);
     }
 
 
@@ -153,19 +139,21 @@ class ImageRendererTest extends TestCase
         ]);
 
         $data = new BarcodeData();
-        $data->codes = [[true, false],[false, true]];
+        $data->codes = [[1, 0],[0, 1]];
 
         $png = $renderer->render($data);
 
         // Open the image
-        $manager = new ImageManager();
-        $image = $manager->make($png);
+        $manager = new ImageManager(new Driver());
+        $image = $manager->read($png);
 
         // The whole image should have either forground or background color
         // Check no other colors appear in the image
         for ($x = 0; $x < $image->width(); $x++) {
             for ($y = 0; $y < $image->height(); $y++) {
-                $c = $image->pickColor($x, $y, 'hex');
+                $c = $image->pickColor($x, $y)->toHex();
+                // Normalize to lowercase with # prefix
+                $c = '#' . strtolower(ltrim($c, '#'));
                 $this->assertTrue(
                     in_array($c, [$color, $bgColor]),
                     "Unexpected color $c encountered. Expected only $color or $bgColor."

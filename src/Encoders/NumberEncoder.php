@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BigFish\PDF417\Encoders;
 
 use BigFish\PDF417\EncoderInterface;
@@ -12,44 +14,23 @@ use BigFish\PDF417\EncoderInterface;
  */
 class NumberEncoder implements EncoderInterface
 {
-    /**
-     * Code word used to switch to Numeric mode.
-     */
-    const SWITCH_CODE_WORD = 902;
+    public const SWITCH_CODE_WORD = 902;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function canEncode($char)
+    public function canEncode(string $char): bool
     {
-        return is_string($char) && 1 === preg_match('/^[0-9]$/', $char);
+        return 1 === preg_match('/^[0-9]$/', $char);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getSwitchCode($data)
+    public function getSwitchCode(string $data): int
     {
         return self::SWITCH_CODE_WORD;
     }
 
     /**
-     *  {@inheritdoc}
-     *
-     * The "Numeric" mode is a conversion from base 10 to base 900.
-     *
-     * - numbers are taken in groups of 44 (or less)
-     * - digit "1" is added to the beginning of the group (it will later be
-     *   removed by the decoding procedure)
-     * - base is changed from 10 to 900
+     * @return array<int>
      */
-    public function encode($digits, $addSwitchCode)
+    public function encode(string $digits, bool $addSwitchCode): array
     {
-        if (!is_string($digits)) {
-            $type = gettype($digits);
-            throw new \InvalidArgumentException("Expected first parameter to be a string, $type given.");
-        }
-
         if (!preg_match('/^[0-9]+$/', $digits)) {
             throw new \InvalidArgumentException("First parameter contains non-numeric characters.");
         }
@@ -79,16 +60,19 @@ class NumberEncoder implements EncoderInterface
         return $codeWords;
     }
 
-    private function encodeChunk($chunk)
+    /**
+     * @return array<int>
+     */
+    private function encodeChunk(string $chunk): array
     {
         $chunk = "1" . $chunk;
 
         $cws = [];
-        while(bccomp($chunk, 0) > 0) {
-            $cw = bcmod($chunk, 900);
-            $chunk = bcdiv($chunk, 900, 0); // Integer division
+        while(bccomp($chunk, '0') > 0) {
+            $cw = bcmod($chunk, '900');
+            $chunk = bcdiv($chunk, '900', 0); // Integer division
 
-            array_unshift($cws, (integer) $cw);
+            array_unshift($cws, (int) $cw);
         }
 
         return $cws;

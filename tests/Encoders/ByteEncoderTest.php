@@ -76,12 +76,9 @@ class ByteEncoderTest extends TestCase
         $this->assertSame($expected, $actual);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Expected first parameter to be a string, array given.
-     */
     public function testInvalidInput()
     {
+        $this->expectException(\TypeError::class);
         $be = new ByteEncoder();
         $be->encode([], true);
     }

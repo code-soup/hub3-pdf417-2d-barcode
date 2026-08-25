@@ -1,17 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BigFish\PDF417\Renderers;
 
 use BigFish\PDF417\BarcodeData;
-use BigFish\PDF417\RendererInterface;
-
 use Intervention\Image\ImageManager;
-use Intervention\Image\Gd\Color;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class ImageRenderer extends AbstractRenderer
 {
-    /** Supported image formats and corresponding MIME types. */
-    protected $formats = [
+    /** @var array<string, string|null> */
+    protected array $formats = [
         'jpg' => 'image/jpeg',
         'png' => 'image/png',
         'gif' => 'image/gif',
@@ -20,7 +20,8 @@ class ImageRenderer extends AbstractRenderer
         'data-url' => null,
     ];
 
-    protected $options = [
+    /** @var array<string, mixed> */
+    protected array $options = [
         'format' => 'png',
         'quality' => 90,
         'scale' => 3,
@@ -30,10 +31,7 @@ class ImageRenderer extends AbstractRenderer
         'bgColor' => "#ffffff",
     ];
 
-    /**
-     * {@inheritdoc}
-     */
-    public function validateOptions()
+    protected function validateOptions(): array
     {
         $errors = [];
 
@@ -63,42 +61,29 @@ class ImageRenderer extends AbstractRenderer
             $errors[] = "Invalid option \"quality\": \"$quality\". Expected an integer between 0 and 50.";
         }
 
-        // Check colors by trying to parse them
+        // Color validation - intervention/image 3.x handles color parsing internally
+        // Simple validation for basic hex colors
         $color = $this->options['color'];
         $bgColor = $this->options['bgColor'];
 
-        $gdColor = new Color();
-
-        try {
-            $gdColor->parse($color);
-        } catch (\Exception $ex) {
+        if (!preg_match('/^#[0-9a-fA-F]{6}$/', $color) && !preg_match('/^rgb\(/', $color) && !preg_match('/^rgba\(/', $color)) {
             $errors[] = "Invalid option \"color\": \"$color\". Supported color formats: \"#000000\", \"rgb(0,0,0)\", or \"rgba(0,0,0,0)\"";
         }
 
-        try {
-            $gdColor->parse($bgColor);
-        } catch (\Exception $ex) {
+        if (!preg_match('/^#[0-9a-fA-F]{6}$/', $bgColor) && !preg_match('/^rgb\(/', $bgColor) && !preg_match('/^rgba\(/', $bgColor)) {
             $errors[] = "Invalid option \"bgColor\": \"$bgColor\". Supported color formats: \"#000000\", \"rgb(0,0,0)\", or \"rgba(0,0,0,0)\"";
         }
 
         return $errors;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getContentType()
+    public function getContentType(): ?string
     {
-        $format = $this->options['format'];
-        return $this->formats[$format];
+        $format = (string) $this->options['format'];
+        return $this->formats[$format] ?? null;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return \Intervention\Image\Image
-     */
-    public function render(BarcodeData $data)
+    public function render(BarcodeData $data): string
     {
         $pixelGrid = $data->getPixelGrid();
         $height = count($pixelGrid);
@@ -113,15 +98,15 @@ class ImageRenderer extends AbstractRenderer
         $ratio = $this->options['ratio'];
         $scale = $this->options['scale'];
 
-        // Create a new image
-        $manager = new ImageManager();
-        $img = $manager->canvas($width, $height, $bgColor);
+        // Create a new image with intervention/image 3.x API
+        $manager = new ImageManager(new Driver());
+        $img = $manager->create($width, $height)->fill($bgColor);
 
         // Render the barcode
         foreach ($pixelGrid as $y => $row) {
             foreach ($row as $x => $value) {
                 if ($value) {
-                    $img->pixel($color, $x, $y);
+                    $img->drawPixel($x, $y, $color);
                 }
             }
         }
@@ -134,8 +119,37 @@ class ImageRenderer extends AbstractRenderer
         // Add padding
         $width += 2 * $padding;
         $height += 2 * $padding;
-        $img->resizeCanvas($width, $height, 'center', false, $bgColor);
+        $img->resizeCanvas($width, $height, $bgColor, 'center');
 
-        return $img->encode($format, $quality);
+        // Encode based on format
+        switch ($format) {
+            case 'jpg':
+            case 'jpeg':
+                $encoded = $img->toJpeg($quality);
+                break;
+            case 'png':
+                $encoded = $img->toPng();
+                break;
+            case 'gif':
+                $encoded = $img->toGif();
+                break;
+            case 'webp':
+                $encoded = $img->toWebp($quality);
+                break;
+            case 'bmp':
+                $encoded = $img->toBitmap();
+                break;
+            case 'tif':
+            case 'tiff':
+                $encoded = $img->toTiff();
+                break;
+            case 'data-url':
+                $encoded = $img->toDataUri();
+                return $encoded;
+            default:
+                $encoded = $img->toPng();
+        }
+
+        return $encoded->toString();
     }
 }

@@ -1,17 +1,23 @@
-<phpunit bootstrap="tests/bootstrap.php">
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.0/phpunit.xsd"
+         bootstrap="tests/bootstrap.php"
+         colors="true">
     <testsuites>
         <testsuite name="tests">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
 
-    <logging>
-        <log type="coverage-html" target="target/coverage" charset="UTF-8" />
-    </logging>
+    <coverage>
+        <report>
+            <html outputDirectory="target/coverage"/>
+        </report>
+    </coverage>
 
-    <filter>
-        <whitelist>
+    <source>
+        <include>
             <directory suffix=".php">src</directory>
-        </whitelist>
-    </filter>
+        </include>
+    </source>
 </phpunit>

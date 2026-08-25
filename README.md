@@ -1,35 +1,38 @@
-PDF 417 barcode generator
+PDF 417 Barcode Generator
 =========================
 
-[![Latest Version](https://img.shields.io/packagist/v/bigfish/pdf417.svg?style=flat-square&label=stable)](https://packagist.org/packages/bigfish/pdf417)
-[![Total Downloads](https://img.shields.io/packagist/dt/bigfish/pdf417.svg?style=flat-square)](https://packagist.org/packages/bigfish/pdf417)
-[![License](https://img.shields.io/packagist/l/bigfish/pdf417.svg?style=flat-square)](https://packagist.org/packages/bigfish/pdf417)
-[![Author](https://img.shields.io/badge/author-%40ihabunek-blue.svg?style=flat-square)](https://twitter.com/ihabunek)
+[![License](https://img.shields.io/packagist/l/codesoup/pdf417.svg?style=flat-square)](https://packagist.org/packages/codesoup/pdf417)
 
-This project is no longer maintained
-------------------------------------
+Modern PHP 8.2+ fork of the archived [bigfish/pdf417](https://github.com/ihabunek/pdf417-php) library.
 
-I have moved on from PHP and this project will no longer be updated. If you wish to continue the legacy, please fork the project.
+## About This Fork
 
-For a maintaned Python implementation check out [ihabunek/pdf417-py](https://github.com/ihabunek/pdf417-py/).
+This is a modernized and actively maintained fork of Ivan Habunek's excellent PDF417 barcode library. The original project was archived in 2017. This fork brings the library up to modern PHP standards with:
 
--- Ivan
+- **PHP 8.2+** compatibility
+- **Modern dependencies** (intervention/image 3.x, PHPUnit 11)
+- **Type safety** (strict types, type hints, return types)
+- **Modern PHP features** (enums, match expressions, property promotion)
+- **Continuous maintenance** and bug fixes
+
+**Original Author:** [Ivan Habunek](https://github.com/ihabunek) (@ihabunek)
+**Maintainer:** CodeSoup
+
+For a Python implementation, check out [ihabunek/pdf417-py](https://github.com/ihabunek/pdf417-py/).
 
 Requirements
 ------------
 
-Requires the following components:
-
-* PHP >= 5.4
-* PHP extensions: bcmath, fileinfo, gd
+* **PHP** >= 8.2
+* **PHP extensions:** bcmath, gd
 
 Installation
 ------------
 
-Add it to your `composer.json` file:
+Install via Composer:
 
-```
-composer require bigfish/pdf417
+```bash
+composer require codesoup/pdf417
 ```
 
 Usage overview
@@ -56,7 +59,15 @@ $renderer = new ImageRenderer([
     'format' => 'png'
 ]);
 
-$image = $renderer->render($data);
+// Returns encoded image as string
+$imageString = $renderer->render($data);
+
+// Save to file
+file_put_contents('barcode.png', $imageString);
+
+// Or output directly
+header('Content-Type: image/png');
+echo $imageString;
 
 // Create an SVG representation
 $renderer = new SvgRenderer([
@@ -69,9 +80,9 @@ $svg = $renderer->render($data);
 ImageRenderer
 -------------
 
-Renders the barcode to an image using [Intervention Image](http://image.intervention.io/)
+Renders the barcode to an image using [Intervention Image 3.x](https://image.intervention.io/v3)
 
-Render function returns an instance of `Intervention\Image\Image`.
+Render function returns an encoded image as a **string**.
 
 #### Options
 
@@ -99,8 +110,8 @@ $renderer = new ImageRenderer([
     'scale' => 10,
 ]);
 
-$image = $renderer->render($data);
-$image->save('hovercraft.png');
+$imageString = $renderer->render($data);
+file_put_contents('hovercraft.png', $imageString);
 ```
 
 The `data-url` format is not like the others, it returns a base64 encoded PNG
@@ -117,21 +128,34 @@ $renderer = new ImageRenderer([
 $img = $renderer->render($data);
 ```
 
-You can use it directly in your HTML or CSS code:
+You can use it directly in your HTML code:
 
-```html
-<img src="<?= $img->encoded ?>" />
+```php
+echo '<img src="' . $img . '" />';
 ```
 
-And this will be rendered as:
+This will be rendered as:
 ```html
 <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA.... " />
 ```
 
-Thanks
-------
+## Migration from bigfish/pdf417
 
-Without these pages, implementation of this project would have been much harder:
+If you're migrating from the original library, see [UPGRADE.md](UPGRADE.md) for details.
 
+Main changes:
+- ImageRenderer now returns a **string** (not an Image object)
+- Use `file_put_contents()` instead of `$image->save()`
+- intervention/image 3.x requires PHP 8.1+
+
+## Credits
+
+**Original Implementation:** [Ivan Habunek](https://github.com/ihabunek) (bigfish/pdf417)
+
+Without these resources, the original implementation would have been much harder:
 * http://grandzebu.net/informatique/codbar-en/pdf417.htm
 * http://www.idautomation.com/barcode-faq/2d/pdf417/
+
+## License
+
+MIT License - see [LICENSE.md](LICENSE.md)

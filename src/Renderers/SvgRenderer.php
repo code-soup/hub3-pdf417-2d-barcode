@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BigFish\PDF417\Renderers;
 
 use BigFish\PDF417\BarcodeData;
@@ -9,20 +11,15 @@ use DOMElement;
 
 class SvgRenderer extends AbstractRenderer
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected $options = [
+    /** @var array<string, mixed> */
+    protected array $options = [
         'scale' => 3,
         'ratio' => 3,
         'color' => "#000",
         'description' => null,
     ];
 
-    /**
-     * {@inheritdoc}
-     */
-    public function validateOptions()
+    protected function validateOptions(): array
     {
         $errors = [];
 
@@ -39,18 +36,12 @@ class SvgRenderer extends AbstractRenderer
         return $errors;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getContentType()
+    public function getContentType(): ?string
     {
         return "image/svg+xml";
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function render(BarcodeData $data)
+    public function render(BarcodeData $data): string
     {
         $pixelGrid = $data->getPixelGrid();
         $height = count($pixelGrid);
@@ -69,8 +60,8 @@ class SvgRenderer extends AbstractRenderer
 
         // Root document
         $svg = $doc->createElement("svg");
-        $svg->setAttribute("height", $height);
-        $svg->setAttribute("width", $width);
+        $svg->setAttribute("height", (string) $height);
+        $svg->setAttribute("width", (string) $width);
         $svg->setAttribute("version", "1.1");
         $svg->setAttribute("xmlns", "http://www.w3.org/2000/svg");
 
@@ -96,10 +87,10 @@ class SvgRenderer extends AbstractRenderer
                 }
 
                 $rect = $doc->createElement('rect');
-                $rect->setAttribute("x", $x * $scaleX);
-                $rect->setAttribute("y", $y * $scaleY);
-                $rect->setAttribute("width", $scaleX);
-                $rect->setAttribute("height", $scaleY);
+                $rect->setAttribute("x", (string) ($x * $scaleX));
+                $rect->setAttribute("y", (string) ($y * $scaleY));
+                $rect->setAttribute("width", (string) $scaleX);
+                $rect->setAttribute("height", (string) $scaleY);
 
                 $group->appendChild($rect);
             }
@@ -122,7 +113,7 @@ class SvgRenderer extends AbstractRenderer
             "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"
         );
 
-        $doc = $impl->createDocument(null, null, $docType);
+        $doc = $impl->createDocument('', '', $docType);
         $doc->formatOutput = true;
 
         return $doc;
