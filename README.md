@@ -3,28 +3,28 @@ HUB3 PDF417 2D Barcode PHP
 
 [![License](https://img.shields.io/packagist/l/codesoup/hub3-pdf417-2d-barcode.svg?style=flat-square)](https://packagist.org/packages/codesoup/hub3-pdf417-2d-barcode)
 
-Modern PHP 8.2+ library for generating **PDF417 2D barcodes**, specifically optimized for Croatian **HUB-3 banking payment slips**.
+PHP 8.2+ library for generating PDF417 2D barcodes, used for Croatian HUB-3 banking payment slips.
 
 ## About HUB-3
 
-**HUB-3** is a payment slip format used by Croatian banks and published by the Croatian Banking Association. It defines a standard way to encode payment data as a 2D barcode in PDF417 format. This barcode is printed on HUB-3 payment slips and can be scanned by banking applications for quick payment processing.
+HUB-3 is a payment slip format used by Croatian banks and published by the Croatian Banking Association. It defines how to encode payment data as a 2D barcode in PDF417 format. Banking applications scan these barcodes from HUB-3 payment slips for payment processing.
 
-Learn more about the HUB-3 standard at [hub3.bigfish.software](https://hub3.bigfish.software/).
+More information: [hub3.bigfish.software](https://hub3.bigfish.software/)
 
 ## About This Library
 
-This is a modernized and actively maintained fork of Ivan Habunek's excellent PDF417 barcode library. The original project ([bigfish/pdf417](https://github.com/ihabunek/pdf417-php)) was archived in 2017. This fork brings the library up to modern PHP standards with:
+Fork of [bigfish/pdf417](https://github.com/ihabunek/pdf417-php) (archived 2017), updated to PHP 8.2+.
 
-- **PHP 8.2+** compatibility with strict type safety
-- **Modern dependencies** (intervention/image 3.x, PHPUnit 11)
-- **Type safety** (declare strict types, type hints, return types, typed properties)
-- **Comprehensive testing** (49 tests, 3119 assertions)
-- **Continuous maintenance** and bug fixes
+Changes from original:
+- PHP 8.2+ with strict type safety
+- intervention/image 3.x, PHPUnit 11
+- Type hints, return types, typed properties
+- 49 tests, 3119 assertions
 
-**Original Author:** [Ivan Habunek](https://github.com/ihabunek) (@ihabunek)
+**Original Author:** [Ivan Habunek](https://github.com/ihabunek)
 **Maintainer:** CodeSoup
 
-For a Python implementation, check out [ihabunek/pdf417-py](https://github.com/ihabunek/pdf417-py/).
+Python version: [ihabunek/pdf417-py](https://github.com/ihabunek/pdf417-py/)
 
 Requirements
 ------------
@@ -147,26 +147,24 @@ This will be rendered as:
 
 ## Use Cases
 
-This library is perfect for:
-
-- **Croatian banking applications** - Generate HUB-3 payment slip barcodes
-- **Payment processing systems** - Encode payment data for bank processing
-- **Invoice generation** - Add 2D barcodes to invoices for Croatian market
-- **General PDF417 needs** - Any application requiring PDF417 2D barcodes
+- Croatian banking applications (HUB-3 payment slip barcodes)
+- Payment processing systems (encode payment data for bank processing)
+- Invoice generation (2D barcodes for Croatian market)
+- General PDF417 barcode generation
 
 ## Migration from bigfish/pdf417
 
-If you're migrating from the original library, see [UPGRADE.md](UPGRADE.md) for details.
+See [UPGRADE.md](UPGRADE.md) for migration details.
 
-Main changes:
-- ImageRenderer now returns a **string** (not an Image object)
+Breaking changes:
+- ImageRenderer returns string (not Image object)
 - Use `file_put_contents()` instead of `$image->save()`
 - intervention/image 3.x requires PHP 8.1+
 
 ## Credits
 
-**Original Implementation:** [Ivan Habunek](https://github.com/ihabunek) ([@ihabunek](https://github.com/ihabunek))
-**PHP 8.2+ Modernization & HUB-3 Optimization:** CodeSoup
+**Original Implementation:** [Ivan Habunek](https://github.com/ihabunek)
+**PHP 8.2+ Update:** CodeSoup
 
 **Original Library:**
 - Repository: https://github.com/ihabunek/pdf417-php
@@ -174,12 +172,13 @@ Main changes:
 - Author's Website: https://bigfish.software/
 - Author's GitHub: https://github.com/ihabunek
 
-Resources that helped the original implementation:
-* http://grandzebu.net/informatique/codbar-en/pdf417.htm
-* http://www.idautomation.com/barcode-faq/2d/pdf417/
-* HUB-3 standard by Croatian Banking Association
+**Resources:**
+- http://grandzebu.net/informatique/codbar-en/pdf417.htm
+- http://www.idautomation.com/barcode-faq/2d/pdf417/
+- HUB-3 standard by Croatian Banking Association
 
-Uses [Intervention Image](https://image.intervention.io/) for image rendering.
+**Dependencies:**
+- [Intervention Image](https://image.intervention.io/) for image rendering
 
 ## License
 
