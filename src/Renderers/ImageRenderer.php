@@ -145,7 +145,8 @@ class ImageRenderer extends AbstractRenderer
                 break;
             case 'data-url':
                 // For data-url, encode to PNG first then convert to data URI
-                return $img->toPng($quality)->toDataUri();
+                $encoded = $img->toPng($quality);
+                return $encoded->toDataUri();
             default:
                 $encoded = $img->toPng();
         }
