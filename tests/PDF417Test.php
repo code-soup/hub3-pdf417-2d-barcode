@@ -111,4 +111,13 @@ class PDF417Test extends TestCase
 
         $this->assertSame($expectedCodes, $barcodeData->codes);
     }
+
+    public function testEncodeRejectsPayloadExceedingMaxCodeWords()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('exceeds the PDF417 maximum of 925');
+
+        $pdf = new PDF417();
+        $pdf->encode(str_repeat('A', 6000));
+    }
 }
