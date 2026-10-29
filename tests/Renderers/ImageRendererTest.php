@@ -119,9 +119,12 @@ class ImageRendererTest extends TestCase
         $manager = new ImageManager(new Driver());
         $image = $manager->read($png);
 
-        // Expected dimensions
-        $width = 2 * $padding + 2 * $scale;
-        $height = 2 * $padding + 2 * $scale * $ratio;
+        // Two 17-module cluster patterns per row, two rows
+        $modulesWide = 34;
+        $modulesTall = 2;
+
+        $width = 2 * $padding + $modulesWide * $scale;
+        $height = 2 * $padding + $modulesTall * $scale * $ratio;
 
         $this->assertSame($width, $image->width());
         $this->assertSame($height, $image->height());

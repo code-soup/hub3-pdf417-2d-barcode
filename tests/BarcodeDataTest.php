@@ -19,10 +19,12 @@ class BarcodeDataTest extends TestCase
 
         $this->assertCount(1, $grid);
         $this->assertCount(17, $grid[0]);
-        $this->assertSame(
-            [false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false],
-            $grid[0]
+
+        $expected = array_map(
+            static fn (string $char): bool => $char === '1',
+            str_split(sprintf('%017b', 0x102))
         );
+        $this->assertSame($expected, $grid[0]);
     }
 
     public function testEncodedHub3SlipRowsHaveExpectedModuleWidth(): void
