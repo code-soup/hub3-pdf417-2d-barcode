@@ -9,6 +9,9 @@ namespace BigFish\PDF417;
  */
 class BarcodeData
 {
+    /** Width in modules of each PDF417 cluster pattern (ISO/IEC 15438). */
+    private const MODULES_PER_SYMBOL = 17;
+
     /** @var array<int> */
     public array $codeWords = [];
 
@@ -30,9 +33,11 @@ class BarcodeData
         foreach ($this->codes as $row) {
             $pixelRow = [];
             foreach ($row as $value) {
-                $bin = decbin($value);
-                $len = strlen($bin);
-                for ($i = 0; $i < $len; $i++) {
+                $bin = sprintf(
+                    '%0' . self::MODULES_PER_SYMBOL . 'b',
+                    $value & ((1 << self::MODULES_PER_SYMBOL) - 1)
+                );
+                for ($i = 0; $i < self::MODULES_PER_SYMBOL; $i++) {
                     $pixelRow[] = $bin[$i] === '1';
                 }
             }
