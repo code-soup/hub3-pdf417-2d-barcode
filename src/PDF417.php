@@ -15,7 +15,6 @@ class PDF417
     const MAX_SECURITY_LEVEL = 8;
     const DEFAULT_SECURITY_LEVEL = 2;
 
-    // TODO: Check barcode respects rows/codeword limits.
     const MIN_ROWS = 3;
     const MAX_ROWS = 90;
     const MAX_CODE_WORDS = 925;
@@ -197,7 +196,40 @@ class PDF417
         $ecWords = $reedSolomon->compute($dataWords, $secLev);
 
         // Combine the code words and return
-        return array_merge($dataWords, $ecWords);
+        $codeWords = array_merge($dataWords, $ecWords);
+        $this->assertWithinSymbolLimits($codeWords, $columns);
+
+        return $codeWords;
+    }
+
+    /**
+     * @param array<int, int> $codeWords
+     */
+    private function assertWithinSymbolLimits(array $codeWords, $columns)
+    {
+        $codeWordCount = count($codeWords);
+
+        if ($codeWordCount > self::MAX_CODE_WORDS) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Encoded data requires %d code words, which exceeds the PDF417 maximum of %d.',
+                    $codeWordCount,
+                    self::MAX_CODE_WORDS
+                )
+            );
+        }
+
+        $rows = (int) ceil($codeWordCount / $columns);
+        if ($rows > self::MAX_ROWS) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Encoded data requires %d rows at %d columns, which exceeds the PDF417 maximum of %d rows.',
+                    $rows,
+                    $columns,
+                    self::MAX_ROWS
+                )
+            );
+        }
     }
 
     // -------------------------------------------------------------------------
