@@ -1,3 +1,4 @@
 /target
 /tmp
 /vendor
+.phpunit.result.cache

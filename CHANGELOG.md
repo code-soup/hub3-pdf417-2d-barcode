@@ -12,7 +12,7 @@ PDF417 Changelog
   * Old: `$img->save('file.png')`
   * New: `file_put_contents('file.png', $imageString)`
 * **PHPUnit 11** for testing (was PHPUnit 4/5)
-* **Package name:** `codesoup/pdf417` (was `bigfish/pdf417`)
+* **Package name:** `codesoup/hub3-pdf417-2d-barcode` (was `bigfish/pdf417`)
 
 ### New Features
 * **Type safety:** All methods have strict types, type hints, and return types

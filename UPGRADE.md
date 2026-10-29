@@ -51,7 +51,7 @@ composer require bigfish/pdf417
 
 **After:**
 ```bash
-composer require codesoup/pdf417
+composer require codesoup/hub3-pdf417-2d-barcode
 ```
 
 ---

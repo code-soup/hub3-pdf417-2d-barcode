@@ -58,7 +58,7 @@ class ImageRenderer extends AbstractRenderer
 
         $quality = $this->options['quality'];
         if (!is_numeric($quality) || $quality < 0 || $quality > 100) {
-            $errors[] = "Invalid option \"quality\": \"$quality\". Expected an integer between 0 and 50.";
+            $errors[] = "Invalid option \"quality\": \"$quality\". Expected an integer between 0 and 100.";
         }
 
         // Color validation - intervention/image 3.x handles color parsing internally
