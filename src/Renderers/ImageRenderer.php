@@ -102,12 +102,29 @@ class ImageRenderer extends AbstractRenderer
         $manager = new ImageManager(new Driver());
         $img = $manager->create($width, $height)->fill($bgColor);
 
-        // Render the barcode
+        // Render the barcode (horizontal runs instead of per-module pixels)
         foreach ($pixelGrid as $y => $row) {
-            foreach ($row as $x => $value) {
-                if ($value) {
-                    $img->drawPixel($x, $y, $color);
+            $rowWidth = count($row);
+            for ($x = 0; $x < $rowWidth; ) {
+                if (!$row[$x]) {
+                    $x++;
+                    continue;
                 }
+
+                $runStart = $x;
+                while ($x < $rowWidth && $row[$x]) {
+                    $x++;
+                }
+
+                $img->drawRectangle(
+                    $runStart,
+                    $y,
+                    $x - 1,
+                    $y,
+                    static function ($rectangle) use ($color): void {
+                        $rectangle->background($color);
+                    }
+                );
             }
         }
 
