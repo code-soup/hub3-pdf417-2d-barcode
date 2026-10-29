@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BigFish\PDF417;
 
 /**
@@ -7,7 +9,8 @@ namespace BigFish\PDF417;
  */
 class ReedSolomon
 {
-    private $factors = [
+    /** @var list<list<int>> */
+    private array $factors = [
 
         // Level 0
         [
@@ -126,13 +129,10 @@ class ReedSolomon
     ];
 
     /**
-     * Computes the solomon reed correction codewords for given data code words.
-     *
-     * @param  array   $data  Data code words.
-     * @param  integer $level Correction level (0-8).
-     * @return array          Correction code words.
+     * @param list<int> $data Data code words.
+     * @return list<int> Correction code words.
      */
-    public function compute(array $data, $level)
+    public function compute(array $data, int $level): array
     {
         if (!isset($this->factors[$level])) {
             $msg = sprintf('Invalid correction level given: "%s". Valid values are 0-8.', $level);
@@ -140,7 +140,7 @@ class ReedSolomon
         }
 
         // Number of correction code words
-        $count = pow(2, $level + 1);
+        $count = (int) pow(2, $level + 1);
 
         // Correction factors for the given level
         $factors = $this->factors[$level];
@@ -152,7 +152,7 @@ class ReedSolomon
         $last = $count - 1;
 
         // Do the math
-        foreach ($data as $key => $value) {
+        foreach ($data as $value) {
             $temp = ($value + $ecWords[$last]) % 929;
 
             for ($i = $last; $i >= 0; $i -= 1) {

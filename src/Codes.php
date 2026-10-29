@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BigFish\PDF417;
 
 /**
@@ -424,7 +426,7 @@ class Codes
      * @param  integer $word  The code word to encode (0-928).
      * @return integer        The encoded code word.
      */
-    public static function getCode($table, $word)
+    public static function getCode(int $table, int $word): int
     {
         if (!isset(self::$codes[$table][$word])) {
             throw new \Exception("Invalid code word [$table][$word].");
