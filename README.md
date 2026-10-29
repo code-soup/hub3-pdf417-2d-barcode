@@ -95,7 +95,7 @@ Render function returns an encoded image as a **string**.
 Option  | Default | Description
 ------- | ------- | -----------
 format  | png     | Output format, one of: `jpg`, `png`, `gif`, `tif`, `bmp`, `data-url`
-quality | 90      | Jpeg encode quality (1-10)
+quality | 90      | Jpeg encode quality (0-100)
 scale   | 3       | Scale of barcode elements (1-20)
 ratio   | 3       | Height to width ration of barcode elements (1-10)
 padding | 20      | Padding in pixels (0-50)

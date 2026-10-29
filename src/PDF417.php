@@ -34,7 +34,7 @@ class PDF417
      * The total number of columns will be greater due to adding start, stop,
      * left and right columns.
      *
-     * Valid values are between 3 and 30, defaults to 6.
+     * Valid values are between 1 and 30, defaults to 6.
      *
      * @var integer
      */
