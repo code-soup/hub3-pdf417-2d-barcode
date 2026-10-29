@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BigFish\PDF417;
 
 /**
@@ -7,66 +9,34 @@ namespace BigFish\PDF417;
  */
 class PDF417
 {
-    const MIN_COLUMNS = 1;
-    const MAX_COLUMNS = 30;
-    const DEFAULT_COLUMNS = 6;
+    public const MIN_COLUMNS = 1;
+    public const MAX_COLUMNS = 30;
+    public const DEFAULT_COLUMNS = 6;
 
-    const MIN_SECURITY_LEVEL = 0;
-    const MAX_SECURITY_LEVEL = 8;
-    const DEFAULT_SECURITY_LEVEL = 2;
+    public const MIN_SECURITY_LEVEL = 0;
+    public const MAX_SECURITY_LEVEL = 8;
+    public const DEFAULT_SECURITY_LEVEL = 2;
 
     // TODO: Check barcode respects rows/codeword limits.
-    const MIN_ROWS = 3;
-    const MAX_ROWS = 90;
-    const MAX_CODE_WORDS = 925;
+    public const MIN_ROWS = 3;
+    public const MAX_ROWS = 90;
+    public const MAX_CODE_WORDS = 925;
 
-    const START_CHARACTER = 0x1fea8;
-    const STOP_CHARACTER  = 0x3fa29;
+    public const START_CHARACTER = 0x1fea8;
+    public const STOP_CHARACTER  = 0x3fa29;
 
-    const PADDING_CODE_WORD = 900;
+    public const PADDING_CODE_WORD = 900;
 
+    private int $columns = self::DEFAULT_COLUMNS;
 
-    // -- Properties -----------------------------------------------------------
+    private int $securityLevel = self::DEFAULT_SECURITY_LEVEL;
 
-    /**
-     * Number of data columns in the bar code.
-     *
-     * The total number of columns will be greater due to adding start, stop,
-     * left and right columns.
-     *
-     * Valid values are between 3 and 30, defaults to 6.
-     *
-     * @var integer
-     */
-    private $columns = self::DEFAULT_COLUMNS;
-
-    /**
-     * The security level to use for Reed Solomon error correction.
-     *
-     * Valid values are between 0 and 8, defaults to 2.
-     *
-     * @var integer
-     */
-    private $securityLevel = self::DEFAULT_SECURITY_LEVEL;
-
-    // -- Accessors ------------------------------------------------------------
-
-    /**
-     * Returns the column count.
-     *
-     * @return integer
-     */
-    public function getColumns()
+    public function getColumns(): int
     {
         return $this->columns;
     }
 
-    /**
-     * Sets the column count.
-     *
-     * @param integer $columns
-     */
-    public function setColumns($columns)
+    public function setColumns(int|string $columns): void
     {
         $min = self::MIN_COLUMNS;
         $max = self::MAX_COLUMNS;
@@ -75,29 +45,21 @@ class PDF417
             throw new \InvalidArgumentException("Column count must be numeric. Given: $columns");
         }
 
+        $columns = (int) $columns;
+
         if ($columns < $min || $columns > $max) {
             throw new \InvalidArgumentException("Column count must be between $min and $max. Given: $columns");
         }
 
-        $this->columns = intval($columns);
+        $this->columns = $columns;
     }
 
-    /**
-     * Returns the security level.
-     *
-     * @return integer
-     */
-    public function getSecurityLevel()
+    public function getSecurityLevel(): int
     {
         return $this->securityLevel;
     }
 
-    /**
-     * Sets the security level.
-     *
-     * @param integer $securityLevel
-     */
-    public function setSecurityLevel($securityLevel)
+    public function setSecurityLevel(int|string $securityLevel): void
     {
         $min = self::MIN_SECURITY_LEVEL;
         $max = self::MAX_SECURITY_LEVEL;
@@ -106,22 +68,19 @@ class PDF417
             throw new \InvalidArgumentException("Security level must be numeric. Given: $securityLevel");
         }
 
+        $securityLevel = (int) $securityLevel;
+
         if ($securityLevel < $min || $securityLevel > $max) {
             throw new \InvalidArgumentException("Security level must be between $min and $max. Given: $securityLevel");
         }
 
-        $this->securityLevel = intval($securityLevel);
+        $this->securityLevel = $securityLevel;
     }
-
-    // -------------------------------------------------------------------------
 
     /**
      * Encodes the given data to low level code words.
-     *
-     * @param  string $data
-     * @return BarcodeData
      */
-    public function encode($data)
+    public function encode(string $data): BarcodeData
     {
         $codeWords = $this->encodeData($data);
         $secLev = $this->securityLevel;
@@ -170,7 +129,7 @@ class PDF417
     }
 
     /** Encodes data to a grid of codewords for constructing the barcode. */
-    public function encodeData($data)
+    public function encodeData(string $data): array
     {
         $columns = $this->columns;
         $secLev = $this->securityLevel;
@@ -180,7 +139,7 @@ class PDF417
         $dataWords = $encoder->encode($data);
 
         // Number of code correction words
-        $ecCount = pow(2, $secLev + 1);
+        $ecCount = (int) pow(2, $secLev + 1);
         $dataCount = count($dataWords);
 
         // Add padding if needed
@@ -200,16 +159,14 @@ class PDF417
         return array_merge($dataWords, $ecWords);
     }
 
-    // -------------------------------------------------------------------------
-
-    private function getLeftCodeWord($rowNum, $rows, $columns, $secLev)
+    private function getLeftCodeWord(int $rowNum, int $rows, int $columns, int $secLev): int
     {
         // Table used to encode this row
         $tableID = $rowNum % 3;
 
-        switch($tableID) {
+        switch ($tableID) {
             case 0:
-                $x = intval(($rows - 1) / 3);
+                $x = intdiv($rows - 1, 3);
                 break;
             case 1:
                 $x = $secLev * 3;
@@ -218,32 +175,39 @@ class PDF417
             case 2:
                 $x = $columns - 1;
                 break;
+            default:
+                throw new \LogicException("Unexpected table ID: $tableID");
         }
 
-        return 30 * intval($rowNum / 3) + $x;
+        return 30 * intdiv($rowNum, 3) + $x;
     }
 
-    private function getRightCodeWord($rowNum, $rows, $columns, $secLev)
+    private function getRightCodeWord(int $rowNum, int $rows, int $columns, int $secLev): int
     {
         $tableID = $rowNum % 3;
 
-        switch($tableID) {
+        switch ($tableID) {
             case 0:
                 $x = $columns - 1;
                 break;
             case 1:
-                $x = intval(($rows - 1) / 3);
+                $x = intdiv($rows - 1, 3);
                 break;
             case 2:
                 $x = $secLev * 3;
                 $x += ($rows - 1) % 3;
                 break;
+            default:
+                throw new \LogicException("Unexpected table ID: $tableID");
         }
 
-        return 30 * intval($rowNum / 3) + $x;
+        return 30 * intdiv($rowNum, 3) + $x;
     }
 
-    private function getPadding($dataCount, $ecCount, $columns)
+    /**
+     * @return array<int, int>
+     */
+    private function getPadding(int $dataCount, int $ecCount, int $columns): array
     {
         // Total number of data words and error correction words, additionally
         // reserve 1 code word for the length descriptor

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BigFish\PDF417;
 
 /**
@@ -10,8 +12,10 @@ namespace BigFish\PDF417;
  */
 class DataEncoder
 {
-    private $encoders;
-    private $defaultEncoder;
+    /** @var list<EncoderInterface> */
+    private array $encoders;
+
+    private EncoderInterface $defaultEncoder;
 
     public function __construct()
     {
@@ -29,19 +33,15 @@ class DataEncoder
     /**
      * Encodes given data into an array of PDF417 code words.
      *
-     * Splits the input data into chains which can be encoded within the same
-     * encoder. Then encodes each chain.
-     *
-     * Uses a pretty dumb algorithm: switches to the best possible encoder for
-     * each separate character (the one that encodes it to the least bytes).
-     *
-     * TODO: create a better algorithm
-     *
-     * @param string $data The data to encode.
+     * @return list<int>
      */
-    public function encode($data)
+    public function encode(string $data): array
     {
         $chains = $this->splitToChains($data);
+
+        if ($chains === []) {
+            return [];
+        }
 
         // Add a switch code at the beginning if the first encoder to be used
         // is not the text encoder. Decoders by default start decoding as text.
@@ -49,9 +49,7 @@ class DataEncoder
         $addSwitchCode = (!($firstEncoder instanceof Encoders\TextEncoder));
 
         $codes = [];
-        foreach ($chains as $chEnc) {
-            list($chain, $encoder) = $chEnc;
-
+        foreach ($chains as [$chain, $encoder]) {
             $encoded = $encoder->encode($chain, $addSwitchCode);
             foreach ($encoded as $code) {
                 $codes[] = $code;
@@ -64,18 +62,11 @@ class DataEncoder
     }
 
     /**
-     * Splits a string into chains (sub-strings) which can be encoded with the
-     * same encoder.
-     *
-     * TODO: Currently always switches to the best encoder, even if it's just
-     * for one character, consider a better algorithm.
-     *
-     * @param  string $data String to split into chains.
-     * @return array        An array of [$chain, $encoder] pairs.
+     * @return list<array{0: string, 1: EncoderInterface}>
      */
-    private function splitToChains($data)
+    private function splitToChains(string $data): array
     {
-        $chain = "";
+        $chain = '';
         $chains = [];
         $encoder = $this->defaultEncoder;
 
@@ -86,9 +77,9 @@ class DataEncoder
             $newEncoder = $this->getEncoder($char);
             if ($newEncoder !== $encoder) {
                 // Save & reset chain if not empty
-                if (!empty($chain)) {
+                if ($chain !== '') {
                     $chains[] = [$chain, $encoder];
-                    $chain = "";
+                    $chain = '';
                 }
 
                 $encoder = $newEncoder;
@@ -97,14 +88,14 @@ class DataEncoder
             $chain .= $char;
         }
 
-        if (!empty($chain)) {
+        if ($chain !== '') {
             $chains[] = [$chain, $encoder];
         }
 
         return $chains;
     }
 
-    public function getEncoder($char)
+    public function getEncoder(string $char): EncoderInterface
     {
         foreach ($this->encoders as $encoder) {
             if ($encoder->canEncode($char)) {
@@ -113,18 +104,6 @@ class DataEncoder
         }
 
         $ord = ord($char);
-        throw new \Exception("Cannot encode character $char (ASCII $ord)");
-    }
-
-    private function encodeChain($chain, EncoderInterface $encoder, array &$codes)
-    {
-        if (empty($chain)) {
-            return;
-        }
-
-        $encoded = $encoder->encode($chain);
-        foreach ($encoded as $code) {
-            $codes[] = $code;
-        }
+        throw new \InvalidArgumentException("Cannot encode character $char (ASCII $ord)");
     }
 }
