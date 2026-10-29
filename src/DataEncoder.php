@@ -39,6 +39,10 @@ class DataEncoder
     {
         $chains = $this->splitToChains($data);
 
+        if ($chains === []) {
+            return [];
+        }
+
         // Add a switch code at the beginning if the first encoder to be used
         // is not the text encoder. Decoders by default start decoding as text.
         $firstEncoder = $chains[0][1];
